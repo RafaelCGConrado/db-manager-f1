@@ -59,7 +59,7 @@ def menu():
                 case 'Administrador':
                     admin.tela_admin(login_input)
                 case 'Escuderia':
-                    constructor.constructor.tela_escuderia(login_input)
+                    constructor.tela_escuderia(login_input)
                 case 'Piloto':
                     driver.tela_piloto(login_input)
 
