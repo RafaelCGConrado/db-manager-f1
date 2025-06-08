@@ -1,5 +1,5 @@
-import tela 
-import conection 
+from . import tela 
+from . import conection 
 
 #Função que define a tela quando o usuário faz login como piloto
 def tela_piloto(nome_usuario):

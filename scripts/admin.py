@@ -3,8 +3,8 @@ import psycopg2
 from psycopg2 import sql
 import getpass
 import os
-import tela
-import conection
+from . import tela
+from . import conection
 
 #Função que define a tela quando o usuário faz login como admin
 def tela_admin(nome_usuario):
