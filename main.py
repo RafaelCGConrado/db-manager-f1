@@ -3,11 +3,11 @@ import psycopg2
 from psycopg2 import sql
 import getpass
 import os
-import tela
-import conection
-import admin
-import constructor
-import driver
+from scripts import tela
+from scripts import conection
+from scripts import admin
+from scripts import constructor
+from scripts import driver
 
 #Registra o login do usuario na tabela de logs
 def log_user(user_id):
