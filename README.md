@@ -10,6 +10,13 @@ O sistema permite diferentes tipos de usuários (Administradores, Escuderias e P
 
 ### Pré-requisitos
 - **Python 3.12** (obrigatório)
+- **uv** (gerenciador de pacotes Python moderno)
+  ```bash
+  # Instalar uv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  # ou no macOS com Homebrew
+  brew install uv
+  ```
 - **Docker & Docker Compose**
 - **Git**
 
@@ -27,9 +34,7 @@ make run
 ```
 
 Este comando irá:
-- Verificar se Python 3.12 está instalado
-- Criar ambiente virtual
-- Instalar dependências
+- Instalar dependências com uv
 - Iniciar container PostgreSQL
 - Configurar base de dados
 - Executar a aplicação
@@ -40,7 +45,9 @@ Este comando irá:
 db-manager-f1/
 ├── main.py                 # Arquivo principal da aplicação
 ├── Makefile               # Comandos de automação
-├── requirements.txt       # Dependências Python
+├── pyproject.toml         # Configuração do projeto e dependências (uv)
+├── uv.lock               # Lock file das dependências
+├── requirements.txt       # Dependências Python (compatibilidade)
 ├── docker-compose.yml     # Configuração Docker
 ├── db/                    # Scripts SQL
 │   ├── dump.sql          # Dump completo da base de dados
@@ -138,26 +145,22 @@ Contém o dump completo da base de dados original da Fórmula 1, incluindo:
 
 #### `make run`
 **Comando mais importante** - Executa todo o setup e inicia a aplicação:
-1. Verifica Python 3.12
-2. Cria ambiente virtual
-3. Instala dependências
-4. Inicia PostgreSQL
-5. Configura base de dados
-6. Executa a aplicação
+1. Instala dependências com uv
+2. Inicia PostgreSQL
+3. Configura base de dados
+4. Executa a aplicação
 
 #### `make help`
 Mostra todos os comandos disponíveis com descrições.
 
 ### Gestão do Ambiente
 
-#### `make check-python`
-Verifica se Python 3.12 está instalado. Se não estiver, mostra instruções de instalação.
-
-#### `make venv`
-Cria ambiente virtual Python usando Python 3.12 especificamente.
-
 #### `make install`
-Instala as dependências Python no ambiente virtual.
+Instala as dependências Python usando o **uv** (gerenciador de pacotes moderno e rápido).
+- Verifica se Python 3.12 está instalado
+- Utiliza `uv sync` para sincronizar dependências
+- Mais rápido que pip tradicional
+- Gerencia automaticamente o ambiente virtual (.venv)
 
 ### Gestão da Base de Dados
 
@@ -191,7 +194,7 @@ Remove apenas os volumes da base de dados (dados persistentes).
 Limpeza completa de recursos Docker (containers, volumes, órfãos).
 
 #### `make clean-all`
-Limpeza total: remove containers, volumes E ambiente virtual Python.
+Limpeza total: remove containers, volumes E ambiente virtual Python (.venv).
 
 ## 👤 Sistema de Utilizadores
 
@@ -245,9 +248,13 @@ lsof -i :5432
 
 Para desenvolver no projeto:
 
-1. **Ambiente de desenvolvimento:**
+1. **Verifique os pré-requisitos:**
+   - Python 3.12 (obrigatório)
+   - uv package manager
+   - Docker & Docker Compose
+
+2. **Ambiente de desenvolvimento:**
 ```bash
-make venv
 make install
 make docker-up
 ```

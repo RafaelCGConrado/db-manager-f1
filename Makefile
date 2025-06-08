@@ -3,12 +3,12 @@
 # Python version detection
 REQUIRED_PYTHON_VERSION := 3.12
 
-.PHONY: help install docker-up setup-db setup-db-force run clean venv
+.PHONY: help install docker-up setup-db setup-db-force run clean clean-all reset-db clean-db-volumes clean-docker
 
 # Default target
 help:
 	@echo "Available commands:"
-	@echo "  make install        - Install Python dependencies in virtual environment"
+	@echo "  make install        - Install Python dependencies using uv"
 	@echo "  make docker-up      - Start PostgreSQL container"
 	@echo "  make setup-db       - Initialize database tables and data (if not exists)"
 	@echo "  make setup-db-force - Force re-run all database migrations"
@@ -17,10 +17,13 @@ help:
 	@echo "  make reset-db       - Reset database completely (removes persistent data)"
 	@echo "  make clean-db-volumes - Clean database volumes only"
 	@echo "  make clean-docker   - Clean all Docker resources"
-	@echo "  make clean-all      - Clean everything including virtual environment"
+	@echo "  make clean-all      - Clean everything including uv environment"
 
 # Install Python dependencies using uv
-install: venv
+install:
+	@echo "Checking Python version..."
+	@python3 --version | grep -q "Python 3.12" || (echo "❌ Python 3.12 is required but not found" && exit 1)
+	@echo "✓ Python 3.12 detected"
 	@echo "Installing Python dependencies with uv..."
 	@uv sync
 	@echo "✓ Dependencies installed"
@@ -116,8 +119,8 @@ clean-docker:
 	docker-compose down -v --remove-orphans
 	docker volume prune -f
 
-# Clean everything including virtual environment
+# Clean everything including uv environment
 clean-all: clean
-	@echo "Removing virtual environment..."
-	rm -rf venv
+	@echo "Removing uv environment..."
+	rm -rf .venv
 	@echo "✓ Everything cleaned up"
