@@ -3,13 +3,11 @@
 # Python version detection
 REQUIRED_PYTHON_VERSION := 3.12
 
-.PHONY: help check-python install docker-up setup-db setup-db-force run clean venv
+.PHONY: help install docker-up setup-db setup-db-force run clean venv
 
 # Default target
 help:
 	@echo "Available commands:"
-	@echo "  make check-python   - Check if Python $(REQUIRED_PYTHON_VERSION) is available"
-	@echo "  make venv           - Create virtual environment"
 	@echo "  make install        - Install Python dependencies in virtual environment"
 	@echo "  make docker-up      - Start PostgreSQL container"
 	@echo "  make setup-db       - Initialize database tables and data (if not exists)"
@@ -21,39 +19,10 @@ help:
 	@echo "  make clean-docker   - Clean all Docker resources"
 	@echo "  make clean-all      - Clean everything including virtual environment"
 
-# Check if Python 3.12 is available
-check-python:
-	@if command -v python3.12 >/dev/null 2>&1; then \
-		echo "✓ Python 3.12 is available"; \
-		python3.12 --version; \
-	else \
-		echo ""; \
-		echo "❌ ERROR: Python 3.12 is required but not found"; \
-		echo ""; \
-		echo "Please install Python 3.12 using one of these methods:"; \
-		echo "  • Homebrew: brew install python@3.12"; \
-		echo "  • Download from: https://www.python.org/downloads/"; \
-		echo "  • Use pyenv: pyenv install 3.12.3"; \
-		echo ""; \
-		echo "After installation, verify with: python3.12 --version"; \
-		echo ""; \
-		exit 1; \
-	fi
-
-# Create virtual environment using Python 3.12
-venv: check-python
-	@if [ ! -d "venv" ]; then \
-		echo "Creating virtual environment with Python 3.12..."; \
-		python3.12 -m venv venv; \
-		echo "✓ Virtual environment created"; \
-	else \
-		echo "✓ Virtual environment already exists"; \
-	fi
-
-# Install Python dependencies
+# Install Python dependencies using uv
 install: venv
-	@echo "Installing Python dependencies..."
-	@. venv/bin/activate && pip install -r requirements.txt
+	@echo "Installing Python dependencies with uv..."
+	@uv sync
 	@echo "✓ Dependencies installed"
 
 # Start Docker Compose services
@@ -113,10 +82,10 @@ setup-db-force: docker-up
 	@docker exec fia-postgres psql -U postgres -d fia -f /docker-entrypoint-initdb.d/index.sql
 	@echo "✓ All database migrations completed successfully"
 
-# Main target: setup everything and run application
+# Main target: setup everything and run application using uv
 run: install setup-db
 	@echo "Starting FIA Database Manager..."
-	@. venv/bin/activate && python main.py
+	@uv run main.py
 
 # Clean up Docker containers
 clean:
